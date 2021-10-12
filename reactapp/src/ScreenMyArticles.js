@@ -22,6 +22,17 @@ function ScreenMyArticles(props) {
     setModalUrl(article.url);
   };
 
+  const handleDelete = async (article) => {
+    props.deleteFromWishList(article);
+
+    console.log(props.token);
+    console.log(article.title);
+
+    await fetch(`/wishlist/article?token=${props.token}&title=${article.title}`, {
+      method: 'DELETE',
+    });
+  }
+
   const handleOk = () => {
 
     setIsModalLoading(true);
@@ -75,7 +86,7 @@ function ScreenMyArticles(props) {
           }
           actions={[
             <ReadOutlined key="ellipsis2" style={readStyle} onClick={() => { showModal(article); props.readArticleInWishlist(article) }} />,
-            <DeleteOutlined key="ellipsis" onClick={() => props.deleteFromWishList(article)} />
+            <DeleteOutlined key="ellipsis" onClick={() => handleDelete(article)} />
           ]}
         >
           <Meta
@@ -142,6 +153,6 @@ function mapDispatchToProps(dispatch) {
 }
 
 function mapStateToProps(state) {
-  return { wishList: state.wishList }
+  return { wishList: state.wishList, token: state.authToken }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(ScreenMyArticles);

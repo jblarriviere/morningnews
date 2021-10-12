@@ -5,6 +5,15 @@ const userSchema = mongoose.Schema({
   username: String,
   password: String,
   token: String,
+  wishlist: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'articles'
+  }],
+  readlist: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'articles'
+  }],
+  selectedCountry: String
 });
 
 module.exports = mongoose.model('users', userSchema);

@@ -18,7 +18,7 @@ function ScreenHome(props) {
 
   const handleSignUp = async () => {
 
-    let response = await fetch('/sign-up', {
+    let response = await fetch('/users/sign-up', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: `username=${signUpUsername}&email=${signUpEmail}&password=${signUpPassword}`
@@ -36,7 +36,7 @@ function ScreenHome(props) {
 
   const handleSignIn = async () => {
 
-    let response = await fetch('/sign-in', {
+    let response = await fetch('/users/sign-in', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: `email=${signInEmail}&password=${signInPassword}`
@@ -45,9 +45,16 @@ function ScreenHome(props) {
     let jsonResponse = await response.json();
 
     if (jsonResponse.result) {
+      //STORE TOKEN IN STORE
       props.loginUser(jsonResponse.token)
+
+      //GET WISHLIST AND REGISTER IN STORE
+      let data = await fetch(`/wishlist/articles/${jsonResponse.token}`)
+      let jsonData = await data.json();
+      props.setWishList(jsonData.wishlist)
+
     } else {
-      setSignInErrors(jsonResponse.errors.map(error => <Alert message={error} type="error" style={{ marginBottom: '10px', width: '250px' }} closable showIcon />));
+      setSignInErrors(jsonResponse.errors.map((error, i) => <Alert key={i} message={error} type="error" style={{ marginBottom: '10px', width: '250px' }} closable showIcon />));
     }
 
   }
@@ -129,6 +136,9 @@ function mapDispatchToProps(dispatch) {
   return {
     loginUser: function (token) {
       dispatch({ type: 'login', token })
+    },
+    setWishList: function (wishlist) {
+      dispatch({ type: 'setWishlist', wishlist })
     }
   }
 }

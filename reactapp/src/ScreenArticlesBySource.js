@@ -30,6 +30,19 @@ function ScreenArticlesBySource(props) {
     fetchData();
   }, [id]);
 
+  const handleLike = async (article) => {
+    props.addToWishList(article);
+
+    console.log(props.token);
+
+    await fetch('/wishlist/article', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: props.token, article })
+      //`token=${props.token}&article=${JSON.stringify(article)}`
+    });
+  }
+
   // MODAL SETUP FOR ARTICLE PREVIEW
 
   const showModal = (index) => {
@@ -62,11 +75,9 @@ function ScreenArticlesBySource(props) {
 
   let cardsList = articleList.map((article, i) => {
 
-    console.log(article.urlToImage);
-
     //set like button style depending if article is already in wishlist or not 
 
-    let likeButton = <LikeOutlined type="like" key="ellipsis" onClick={() => props.addToWishList(article)} />;
+    let likeButton = <LikeOutlined type="like" key="ellipsis" onClick={() => handleLike(article)} />;
 
     if (props.wishList.find(elem => elem.title === article.title)) {
       likeButton = <LikeTwoTone type="like" key="ellipsis" onClick={() => props.removeFromWishList(article)} />;
@@ -160,7 +171,7 @@ function mapDispatchToProps(dispatch) {
 }
 
 function mapStateToProps(state) {
-  return { wishList: state.wishList }
+  return { wishList: state.wishList, token: state.authToken }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ScreenArticlesBySource);
